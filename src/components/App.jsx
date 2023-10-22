@@ -22,8 +22,9 @@ export class App extends Component {
 
     this.setState({
       query: inputValue,
+      page: 1,
+      images: [],
     });
-    this.setState({ page: 1 });
 
     // Сохраняем термин поиска (query)
     // Сбрасываем page в 1
