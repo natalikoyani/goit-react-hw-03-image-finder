@@ -25,26 +25,23 @@ export class App extends Component {
       page: 1,
       images: [],
     });
-
-    // Сохраняем термин поиска (query)
-    // Сбрасываем page в 1
-    // Очистить массив картинок
   };
 
   handleLoadMore = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }));
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+      images: [...prevState.images, ...this.state.images],
+    }));
   };
 
-  async componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(prevState) {
     const { query, page } = this.state;
 
     if (prevState.query !== query || prevState.page !== page) {
       try {
         this.setState({ loading: true });
         const fetchedImages = await fetchImages(query, page);
-        console.log(fetchedImages.hits);
         this.setState({ images: fetchedImages.hits });
-        console.log(this.state.images);
       } catch (error) {
         console.log(error.message);
       } finally {
