@@ -1,5 +1,7 @@
 import * as basicLightbox from 'basiclightbox';
 import 'basiclightbox/dist/basicLightbox.min.css';
+import { StyledGalleryItem } from './ImageGalleryItem.styled';
+import { StyledGalleryImage } from './ImageGalleryItem.styled';
 
 // export const ImageGalleryItem = ({ image }) => {
 //   const instance = basicLightbox.create(`
@@ -38,8 +40,8 @@ export const ImageGalleryItem = ({ image }) => {
   };
 
   return (
-    <li key={image.id} class="gallery-item" onClick={openModal}>
-      <img src={image.webformatURL} alt={image.tags} />
-    </li>
+    <StyledGalleryItem key={image.id} onClick={openModal}>
+      <StyledGalleryImage src={image.webformatURL} alt={image.tags} />
+    </StyledGalleryItem>
   );
 };

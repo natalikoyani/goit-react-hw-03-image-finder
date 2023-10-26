@@ -1,8 +1,10 @@
 import { Component } from 'react';
-import { fetchImages } from 'api';
+import { fetchImages } from 'components/api';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { Button } from './Button/Button';
+import { Loader } from './Loader/Loader';
+import { StyledApp } from './App.styled';
 
 export class App extends Component {
   state = {
@@ -34,7 +36,7 @@ export class App extends Component {
     }));
   };
 
-  async componentDidUpdate(prevState) {
+  async componentDidUpdate(prevProps, prevState) {
     const { query, page } = this.state;
 
     if (prevState.query !== query || prevState.page !== page) {
@@ -53,14 +55,14 @@ export class App extends Component {
   render() {
     const { images, loading } = this.state;
     return (
-      <div>
+      <StyledApp>
         <Searchbar onSubmit={this.handleSubmit} />
         {images.length > 0 && <ImageGallery images={images} />}
-        {loading && <div>Loader...</div>}
+        {loading && <Loader />}
         {images.length > 0 && (
           <Button onClick={this.handleLoadMore}>Load more</Button>
         )}
-      </div>
+      </StyledApp>
     );
   }
 }
