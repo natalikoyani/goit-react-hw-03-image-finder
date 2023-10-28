@@ -1,47 +1,67 @@
-import * as basicLightbox from 'basiclightbox';
-import 'basiclightbox/dist/basicLightbox.min.css';
+import { Component } from 'react';
+import Modal from 'react-modal';
 import { StyledGalleryItem } from './ImageGalleryItem.styled';
 import { StyledGalleryImage } from './ImageGalleryItem.styled';
 
-// export const ImageGalleryItem = ({ image }) => {
-//   const instance = basicLightbox.create(`
-//       <div class="modal">
-//         <img src=${image.largeImageURL} alt=${image.tags} width="900px"/>
-//       </div>
-//   `);
-
-//   return (
-//     <li key={image.id} class="gallery-item" onClick={instance.show}>
-//       <img src={image.webformatURL} alt={image.tags} />
-//     </li>
-//   );
-// };
-
-export const ImageGalleryItem = ({ image }) => {
-  let instance = null;
-
-  const openModal = () => {
-    if (!instance) {
-      instance = basicLightbox.create(`
-        <div class="modal">
-          <img src=${image.webformatURL} alt=${image.tags} width="900px"/>
-        </div>
-      `);
-    }
-    instance.show();
-    window.addEventListener('keydown', closeModalOnEsc);
-  };
-
-  const closeModalOnEsc = evt => {
-    if (evt.keyCode === 27) {
-      instance.close();
-      window.removeEventListener('keydown', closeModalOnEsc);
-    }
-  };
-
-  return (
-    <StyledGalleryItem key={image.id} onClick={openModal}>
-      <StyledGalleryImage src={image.webformatURL} alt={image.tags} />
-    </StyledGalleryItem>
-  );
+const customStyles = {
+  overlay: {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    zIndex: '1200',
+  },
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    maxWidth: 'calc(100vw - 48px)',
+  },
 };
+
+Modal.setAppElement('#root');
+
+export class ImageGalleryItem extends Component {
+  state = {
+    isModalOpen: false,
+  };
+
+  openModal = () => {
+    this.setState({ isModalOpen: true });
+    document.body.style.overflow = 'hidden';
+  };
+
+  closeModal = () => {
+    this.setState({ isModalOpen: false });
+    document.body.style.overflow = 'auto';
+  };
+
+  render() {
+    const { isModalOpen } = this.state;
+    const { image } = this.props;
+
+    return (
+      <StyledGalleryItem key={image.id} onClick={this.openModal}>
+        <StyledGalleryImage src={image.webformatURL} alt={image.tags} />
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={this.closeModal}
+          style={customStyles}
+          contentLabel="Example Modal"
+          shouldCloseOnOverlayClick={true}
+          shouldCloseOnEsc={true}
+        >
+          <img src={image.largeImageURL} alt={image.tags} />
+        </Modal>
+      </StyledGalleryItem>
+    );
+  }
+}

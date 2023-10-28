@@ -7,7 +7,16 @@ import { StyledInput } from './Searchbar.styled';
 export const Searchbar = ({ onSubmit }) => {
   return (
     <StyledSearchbar>
-      <StyledSearchForm onSubmit={onSubmit}>
+      <StyledSearchForm
+        onSubmit={evt => {
+          evt.preventDefault();
+          const inputValue = evt.target.elements.input.value
+            .trim()
+            .replace(' ', '+')
+            .toLowerCase();
+          onSubmit(inputValue);
+        }}
+      >
         <StyledFormButton>
           <StyledButtonLabel />
         </StyledFormButton>

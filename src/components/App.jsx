@@ -13,15 +13,34 @@ export class App extends Component {
     images: [],
     loading: false,
     error: false,
+    showBtn: false,
+    isModalOpen: false,
   };
 
-  handleSubmit = evt => {
-    evt.preventDefault();
-    const inputValue = evt.target.elements.input.value
-      .trim()
-      .replace(' ', '+')
-      .toLowerCase();
+  async componentDidUpdate(prevProps, prevState) {
+    const { query, page } = this.state;
 
+    if (prevState.query !== query || prevState.page !== page) {
+      try {
+        this.setState({ loading: true });
+        const fetchedImages = await fetchImages(query, page);
+        this.setState(prevState => ({
+          images: [...prevState.images, ...fetchedImages.hits],
+        }));
+        if (page < Math.ceil(fetchedImages.totalHits / 12)) {
+          this.setState({ showBtn: true });
+        } else {
+          this.setState({ showBtn: false });
+        }
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        this.setState({ loading: false });
+      }
+    }
+  }
+
+  handleSubmit = inputValue => {
     this.setState({
       query: inputValue,
       page: 1,
@@ -32,36 +51,17 @@ export class App extends Component {
   handleLoadMore = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
-      images: [...prevState.images, ...this.state.images],
     }));
   };
 
-  async componentDidUpdate(prevProps, prevState) {
-    const { query, page } = this.state;
-
-    if (prevState.query !== query || prevState.page !== page) {
-      try {
-        this.setState({ loading: true });
-        const fetchedImages = await fetchImages(query, page);
-        this.setState({ images: fetchedImages.hits });
-      } catch (error) {
-        console.log(error.message);
-      } finally {
-        this.setState({ loading: false });
-      }
-    }
-  }
-
   render() {
-    const { images, loading } = this.state;
+    const { images, loading, showBtn } = this.state;
     return (
       <StyledApp>
         <Searchbar onSubmit={this.handleSubmit} />
         {images.length > 0 && <ImageGallery images={images} />}
         {loading && <Loader />}
-        {images.length > 0 && (
-          <Button onClick={this.handleLoadMore}>Load more</Button>
-        )}
+        {showBtn && <Button onClick={this.handleLoadMore}>Load more</Button>}
       </StyledApp>
     );
   }
