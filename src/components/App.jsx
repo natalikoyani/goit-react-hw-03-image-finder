@@ -27,11 +27,9 @@ export class App extends Component {
         this.setState(prevState => ({
           images: [...prevState.images, ...fetchedImages.hits],
         }));
-        if (page < Math.ceil(fetchedImages.totalHits / 12)) {
-          this.setState({ showBtn: true });
-        } else {
-          this.setState({ showBtn: false });
-        }
+        this.setState({
+          showBtn: page < Math.ceil(fetchedImages.totalHits / 12),
+        });
       } catch (error) {
         console.log(error.message);
       } finally {
